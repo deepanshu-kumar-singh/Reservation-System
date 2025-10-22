@@ -19,27 +19,17 @@ The following sequence describes the high-level flow when a flight booking reque
 
 This module is a showcase of several well-established design patterns, contributing to its robustness and maintainability:
 
-### 2.1. Dependency Injection (DI)
--   **Description**: A core principle of the Spring Framework, where components declare their dependencies, and the Spring IoC container provides those dependencies at runtime.
--   **Usage**: Evident throughout the module. Instead of creating instances with `new`, components like `BookingController`, `FlightBookingServiceImpl`, and various strategies receive their dependencies via constructor injection (e.g., `RestTemplate`, `BookingValidationService`, `BookingValidationStrategy`).
--   **Benefits**: Promotes loose coupling, enhances testability, and simplifies configuration.
-
-### 2.2. Service Layer Pattern
--   **Description**: Separates business logic from presentation (controller) and data access layers.
--   **Usage**: `AbstractBookingService` and `FlightBookingServiceImpl` form the service layer, encapsulating the complex booking workflow. The `BookingController` acts as a thin facade, delegating business operations to this layer.
--   **Benefits**: Improves separation of concerns, making the application easier to understand, maintain, and scale.
-
-### 2.3. Template Method Pattern
+### 2.1. Template Method Pattern
 -   **Description**: Defines the skeleton of an algorithm in a base class, deferring some steps to subclasses.
 -   **Usage**: `AbstractBookingService<T>` is the abstract base class. Its `bookFlight(T request)` method is the `final` template method, enforcing the sequence: `validate` -> (`onSuccess` or `onError`). Subclasses (like `FlightBookingServiceImpl`) provide concrete implementations for these abstract steps.
 -   **Benefits**: Guarantees a consistent, unchangeable workflow for core operations while allowing flexibility in specific step implementations. Prevents developers from accidentally altering the fundamental process.
 
-### 2.4. Strategy Pattern
+### 2.2. Strategy Pattern
 -   **Description**: Defines a family of algorithms, encapsulates each one, and makes them interchangeable.
 -   **Usage**: `FlightBookingServiceImpl` delegates its `validate`, `onSuccess`, and `onError` operations to separate strategy interfaces (`BookingValidationStrategy`, `BookingSuccessStrategy`, `BookingErrorStrategy`) and their concrete implementations (e.g., `DefaultBookingValidationStrategy`, `SagaStartSuccessStrategy`, `DefaultBookingErrorStrategy`).
 -   **Benefits**: Allows the behavior of each step to be changed or extended independently without modifying the `FlightBookingServiceImpl`. Enhances modularity, testability, and extensibility.
 
-### 2.5. Global Exception Handling (Architectural Pattern)
+### 2.3. Global Exception Handling (Architectural Pattern)
 -   **Description**: Centralized mechanism to catch and handle exceptions across the entire application.
 -   **Usage**: Implemented via `@ControllerAdvice` in `GlobalExceptionHandler`. It specifically intercepts `MethodArgumentNotValidException` (from `@Valid` annotations) to return structured `400 Bad Request` responses.
 -   **Benefits**: Provides a consistent error response format to clients, prevents boilerplate `try-catch` blocks in controllers, and improves the overall robustness of the API.
