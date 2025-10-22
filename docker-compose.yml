@@ -1,0 +1,57 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: traveldb
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  adapter:
+    build: ./adapter
+    ports:
+      - "8080:8080"
+    depends_on: 
+      - orchestrator
+
+  orchestrator:
+    build: ./orchestrator
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db-manager
+      - name-service
+      - phone-service
+      - availability-service
+      - flight-booking-service
+
+  db-manager:
+    build: ./db-manager
+    ports:
+      - "8082:8082"
+
+  name-service:
+    build: ./name-service
+    ports:
+      - "8083:8083"
+
+  phone-service:
+    build: ./phone-service
+    ports:
+      - "8084:8084"
+
+  availability-service:
+    build: ./availability-service
+    ports:
+      - "8085:8085"
+
+  flight-booking-service:
+    build: ./flight-booking-service
+    ports:
+      - "8086:8086"
+
+volumes:
+  mysql-data:

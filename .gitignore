@@ -1,0 +1,8 @@
+# Project exclude paths
+/adapter/target/
+/availability-service/target/
+/db-manager/target/
+/flight-booking-service/target/
+/name-service/target/
+/orchestrator/target/
+/phone-service/target/

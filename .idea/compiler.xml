@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="flight-booking-service" />
+        <module name="orchestrator" />
+        <module name="adapter" />
+        <module name="availability-service" />
+        <module name="phone-service" />
+        <module name="name-service" />
+        <module name="db-manager" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="adapter" options="-parameters" />
+      <module name="availability-service" options="-parameters" />
+      <module name="db-manager" options="-parameters" />
+      <module name="flight-booking-service" options="-parameters" />
+      <module name="name-service" options="-parameters" />
+      <module name="orchestrator" options="-parameters" />
+      <module name="phone-service" options="-parameters" />
+    </option>
+  </component>
+</project>
