@@ -1,29 +1,26 @@
 package com.example.travel.adapter.controller;
 
-import com.example.travel.adapter.dto.FlightBookingRequest;
-import com.example.travel.adapter.service.AbstractBookingService;
-import jakarta.validation.Valid;
+import com.example.travel.adapter.dto.BookingRequest;
+import com.example.travel.adapter.router.RegexBasedBookingRouter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/v1/bookings")
 public class BookingController {
 
-    private final AbstractBookingService bookingService;
+    private final RegexBasedBookingRouter bookingRouter;
 
-    public BookingController(AbstractBookingService bookingService) {
-        this.bookingService = bookingService;
+    public BookingController(RegexBasedBookingRouter bookingRouter) {
+        this.bookingRouter = bookingRouter;
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, String>> book(@Valid @RequestBody FlightBookingRequest request) {
-        Map<String, String> responseBody = bookingService.bookFlight(request);
+    public ResponseEntity<String> book(@RequestBody BookingRequest request) {
+        String responseBody = bookingRouter.route(request.getQuery());
         return ResponseEntity.accepted().body(responseBody);
     }
 }
