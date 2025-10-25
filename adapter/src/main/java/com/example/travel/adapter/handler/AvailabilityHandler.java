@@ -1,5 +1,6 @@
 package com.example.travel.adapter.handler;
 
+import com.example.travel.adapter.error.ErrorResponseFactory;
 import com.example.travel.adapter.service.booking.availability.AvailabilityService;
 import com.example.travel.adapter.validators.availability.AvailabilityValidator;
 
@@ -9,13 +10,14 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AvailabilityHandler extends AbstractBookingFlowHandler {
+public class AvailabilityHandler extends AbstractBookingHandler {
 
     private static final Pattern AVAILABILITY_PATTERN = Pattern.compile("^START\\s+(\\d{1,2}[A-Z]{3})([A-Z]{3})([A-Z]{3})$", Pattern.CASE_INSENSITIVE);
     private final AvailabilityValidator validator;
     private final AvailabilityService availabilityService;
 
-    public AvailabilityHandler(AvailabilityService availabilityService, AvailabilityValidator validator) {
+    public AvailabilityHandler(ErrorResponseFactory errorResponseFactory, AvailabilityService availabilityService, AvailabilityValidator validator) {
+        super(errorResponseFactory);
         this.availabilityService = availabilityService;
         this.validator = validator;
     }
@@ -33,7 +35,7 @@ public class AvailabilityHandler extends AbstractBookingFlowHandler {
             if (errors.isEmpty()) {
                 return availabilityService.checkAvailability(availabilityDetails);
             }
-            return "VALIDATION FAILED";
+            return errorResponseFactory.createErrorResponse("ERR-002");
         }
         return handleNext(request);
     }

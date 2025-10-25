@@ -1,6 +1,6 @@
 package com.example.travel.adapter.service.orchestration;
 
-import com.example.travel.adapter.dto.FlightBookingResponse;
+import com.example.travel.adapter.dto.SellResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -15,8 +15,8 @@ public class OrchestrationService {
         this.restTemplate = restTemplate;
     }
 
-    public FlightBookingResponse bookFlight(Map<String, Object> flightDetails) {
-        return restTemplate.postForObject("http://flight-booking-service/api/v1/flights", flightDetails, FlightBookingResponse.class);
+    public SellResponse bookFlight(Map<String, Object> flightDetails) {
+        return restTemplate.postForObject("http://flight-booking-service/api/v1/flights", flightDetails, SellResponse.class);
     }
 
     public String checkAvailability(Map<String, Object> availabilityDetails) {

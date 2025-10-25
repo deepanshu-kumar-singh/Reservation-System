@@ -3,7 +3,7 @@ package com.example.travel.adapter.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class FlightBookingRequest {
+public class SellRequest {
     @NotBlank
     private String firstName;
     @NotBlank
@@ -15,7 +15,7 @@ public class FlightBookingRequest {
     @NotBlank
     private String classOfService;
 
-    public FlightBookingRequest() {}
+    public SellRequest() {}
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
     public String getLastName() { return lastName; }

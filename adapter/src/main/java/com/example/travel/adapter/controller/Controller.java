@@ -1,7 +1,7 @@
 package com.example.travel.adapter.controller;
 
 import com.example.travel.adapter.dto.BookingRequest;
-import com.example.travel.adapter.router.RegexBasedBookingRouter;
+import com.example.travel.adapter.router.Router;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,17 +10,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/bookings")
-public class BookingController {
+public class Controller {
 
-    private final RegexBasedBookingRouter bookingRouter;
+    private final Router router;
 
-    public BookingController(RegexBasedBookingRouter bookingRouter) {
-        this.bookingRouter = bookingRouter;
+    public Controller(Router router) {
+        this.router = router;
     }
 
     @PostMapping
-    public ResponseEntity<String> book(@RequestBody BookingRequest request) {
-        String responseBody = bookingRouter.route(request.getQuery());
+    public ResponseEntity<String> cook(@RequestBody BookingRequest request) {
+        String responseBody = router.route(request.getQuery());
+
         return ResponseEntity.accepted().body(responseBody);
     }
 }

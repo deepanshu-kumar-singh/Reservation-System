@@ -1,6 +1,6 @@
 package com.example.travel.adapter.dto;
 
-public class FlightBookingResponse {
+public class SellResponse {
 
     private String bookingId;
     private String status;

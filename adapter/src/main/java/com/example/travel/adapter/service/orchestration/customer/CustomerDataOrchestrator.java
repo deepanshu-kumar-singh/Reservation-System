@@ -12,11 +12,11 @@ public class CustomerDataOrchestrator {
         this.restTemplate = restTemplate;
     }
 
-    public String processNameQuery(String name) {
+    public String processName(String name) {
         return restTemplate.postForObject("http://customer-data-service/api/v1/customer/name", name, String.class);
     }
 
-    public String processPhoneNumberQuery(String phoneNumber) {
+    public String processPhoneNumber(String phoneNumber) {
         return restTemplate.postForObject("http://customer-data-service/api/v1/customer/phone", phoneNumber, String.class);
     }
 }

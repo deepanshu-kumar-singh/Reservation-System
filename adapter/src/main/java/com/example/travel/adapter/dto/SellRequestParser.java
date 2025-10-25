@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-public class FlightBookingRequestParser {
+public class SellRequestParser {
 
     private static final Pattern FLIGHT_BOOKING_PATTERN = Pattern.compile("^O([A-Z]{2})([A-Z])(\\d{2}[A-Z]{3})([A-Z]{3})([A-Z]{3})NN(\\d+)$", Pattern.CASE_INSENSITIVE);
 
