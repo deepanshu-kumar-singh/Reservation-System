@@ -14,10 +14,8 @@ public class PhoneNumberValidator implements Validator<String> {
         List<String> errors = new ArrayList<>();
 
         if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
-            errors.add("Phone number cannot be null or empty.");
+            errors.add("Phone number cannot be null");
         }
-        // The regex in PhoneNumberQueryHandler already ensures it's 10 digits.
-        // Additional validation (e.g., format, country code) could be added here.
 
         return errors;
     }

@@ -21,7 +21,6 @@ public class Controller {
     @PostMapping
     public ResponseEntity<String> cook(@RequestBody BookingRequest request) {
         String responseBody = router.route(request.getQuery());
-
         return ResponseEntity.accepted().body(responseBody);
     }
 }

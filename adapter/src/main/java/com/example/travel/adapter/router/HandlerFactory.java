@@ -6,8 +6,8 @@ import com.example.travel.adapter.handler.*;
 import com.example.travel.adapter.service.booking.availability.AvailabilityService;
 import com.example.travel.adapter.service.booking.customer.CustomerService;
 import com.example.travel.adapter.service.booking.flight.SellService;
-import com.example.travel.adapter.validators.availability.AvailabilityValidator;
-import com.example.travel.adapter.validators.flightbooking.FlightBookingValidator;
+import com.example.travel.adapter.validators.availability.AvailabilityAvailValidator;
+import com.example.travel.adapter.validators.sell.SellValidator;
 import com.example.travel.adapter.validators.name.NameValidator;
 import com.example.travel.adapter.validators.phonenumber.PhoneNumberValidator;
 import org.springframework.stereotype.Component;
@@ -19,8 +19,8 @@ public class HandlerFactory {
     private final AvailabilityService availabilityService;
     private final CustomerService customerService;
     private final SellRequestParser parser;
-    private final FlightBookingValidator flightBookingValidator;
-    private final AvailabilityValidator availabilityValidator;
+    private final SellValidator sellValidator;
+    private final AvailabilityAvailValidator availabilityValidator;
     private final NameValidator nameValidator;
     private final PhoneNumberValidator phoneNumberValidator;
     private final ErrorResponseFactory errorResponseFactory;
@@ -29,8 +29,8 @@ public class HandlerFactory {
                           AvailabilityService availabilityService,
                           CustomerService customerService,
                           SellRequestParser parser,
-                          FlightBookingValidator flightBookingValidator,
-                          AvailabilityValidator availabilityValidator,
+                          SellValidator sellValidator,
+                          AvailabilityAvailValidator availabilityValidator,
                           NameValidator nameValidator,
                           PhoneNumberValidator phoneNumberValidator,
                           ErrorResponseFactory errorResponseFactory) {
@@ -38,7 +38,7 @@ public class HandlerFactory {
         this.availabilityService = availabilityService;
         this.customerService = customerService;
         this.parser = parser;
-        this.flightBookingValidator = flightBookingValidator;
+        this.sellValidator = sellValidator;
         this.availabilityValidator = availabilityValidator;
         this.nameValidator = nameValidator;
         this.phoneNumberValidator = phoneNumberValidator;
@@ -46,7 +46,7 @@ public class HandlerFactory {
     }
 
     public BookingHandler linkableChain() {
-        BookingHandler flightBookingHandler = new SellHandler(errorResponseFactory, sellService, parser, flightBookingValidator);
+        BookingHandler flightBookingHandler = new SellHandler(errorResponseFactory, sellService, parser, sellValidator);
         BookingHandler availabilityHandler = new AvailabilityHandler(errorResponseFactory, availabilityService, availabilityValidator);
         BookingHandler nameQueryHandler = new NameHandler(errorResponseFactory, customerService, nameValidator);
         BookingHandler phoneNumberQueryHandler = new PhoneNumberHandler(errorResponseFactory, customerService, phoneNumberValidator);

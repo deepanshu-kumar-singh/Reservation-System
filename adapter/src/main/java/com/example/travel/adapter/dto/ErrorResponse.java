@@ -1,14 +1,17 @@
 package com.example.travel.adapter.dto;
 
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Getter
 public class ErrorResponse {
-    private LocalDateTime timestamp;
-    private int status;
-    private String error;
-    private String message;
-    private List<String> details;
+    private final LocalDateTime timestamp;
+    private final int status;
+    private final String error;
+    private final String message;
+    private final List<String> details;
 
     public ErrorResponse(int status, String error, String message, List<String> details) {
         this.timestamp = LocalDateTime.now();
@@ -18,9 +21,4 @@ public class ErrorResponse {
         this.details = details;
     }
 
-    public LocalDateTime getTimestamp() { return timestamp; }
-    public int getStatus() { return status; }
-    public String getError() { return error; }
-    public String getMessage() { return message; }
-    public List<String> getDetails() { return details; }
 }

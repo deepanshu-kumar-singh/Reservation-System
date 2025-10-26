@@ -15,7 +15,6 @@ public class AvailabilityService {
     }
 
     public String checkAvailability(Map<String, Object> availabilityDetails) {
-        // The orchestrator already returns a string, so we can just return it directly.
         return orchestrator.checkAvailability(availabilityDetails);
     }
 }

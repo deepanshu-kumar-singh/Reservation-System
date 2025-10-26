@@ -2,7 +2,7 @@ package com.example.travel.adapter.handler;
 
 import com.example.travel.adapter.error.ErrorResponseFactory;
 import com.example.travel.adapter.service.booking.availability.AvailabilityService;
-import com.example.travel.adapter.validators.availability.AvailabilityValidator;
+import com.example.travel.adapter.validators.availability.AvailabilityAvailValidator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,10 +13,10 @@ import java.util.regex.Pattern;
 public class AvailabilityHandler extends AbstractBookingHandler {
 
     private static final Pattern AVAILABILITY_PATTERN = Pattern.compile("^START\\s+(\\d{1,2}[A-Z]{3})([A-Z]{3})([A-Z]{3})$", Pattern.CASE_INSENSITIVE);
-    private final AvailabilityValidator validator;
+    private final AvailabilityAvailValidator validator;
     private final AvailabilityService availabilityService;
 
-    public AvailabilityHandler(ErrorResponseFactory errorResponseFactory, AvailabilityService availabilityService, AvailabilityValidator validator) {
+    public AvailabilityHandler(ErrorResponseFactory errorResponseFactory, AvailabilityService availabilityService, AvailabilityAvailValidator validator) {
         super(errorResponseFactory);
         this.availabilityService = availabilityService;
         this.validator = validator;
