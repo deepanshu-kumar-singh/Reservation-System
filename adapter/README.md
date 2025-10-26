@@ -1,79 +1,110 @@
-# Travel Booking Management Service - Adapter Module
+# Booking Management Adapter
 
-This `adapter` module is a crucial component of the Travel Booking Management Service. Its primary responsibility is to act as an entry point for external requests, handling the initial processing, validation, and orchestration of flight booking operations. It leverages several design patterns to ensure a robust, maintainable, and extensible architecture.
+## 1. Overview
 
-## 1. Architectural Flow for Flight Booking
+This adapter service acts as a unified entry point for a variety of booking and customer-related queries. It is designed to receive simple string-based requests, intelligently parse and validate them, and route them to the appropriate downstream microservice. 
 
-The following sequence describes the high-level flow when a flight booking request is received by the `adapter` module:
+The core feature of this adapter is its ability to interpret different request formats for different flows, such as flight booking, availability checks, and customer data lookups, all through a single, consistent API endpoint.
 
-1.  **Request Reception**: A `POST` request containing `FlightBookingRequest` data is received by the `BookingController`.
-2.  **Initial Validation**: The `@Valid` annotation on the `FlightBookingRequest` in the controller triggers standard Bean Validation (JSR-303). If this validation fails, a `MethodArgumentNotValidException` is thrown and caught by the `GlobalExceptionHandler`, returning a `400 Bad Request` to the client with detailed error messages.
-3.  **Service Delegation**: If initial validation passes, the `BookingController` delegates the request to the `FlightBookingServiceImpl` (which extends `AbstractBookingService`).
-4.  **Template Method Execution**: The `AbstractBookingService`'s `bookFlight` method (the Template Method) orchestrates the following steps:
-    a.  **Business Validation**: The `validate` method is called, which in turn uses the injected `BookingValidationStrategy` (e.g., `DefaultBookingValidationStrategy`) to perform business-specific validation. If this validation fails, a `ValidationException` is thrown.
-    b.  **Success Handling**: If business validation succeeds, the `onSuccess` method is called. This method uses the injected `BookingSuccessStrategy` (e.g., `SagaStartSuccessStrategy`) to initiate the booking process (e.g., calling an orchestrator service to start a Saga).
-    c.  **Error Handling**: If a `ValidationException` is caught during business validation, the `onError` method is called. This method uses the injected `BookingErrorStrategy` (e.g., `DefaultBookingErrorStrategy`) to format and return a structured error response.
-5.  **Response to Client**: The `BookingController` receives the `Map<String, String>` response from the service layer and wraps it in a `ResponseEntity`, returning it to the client (typically `202 Accepted` for successful initiation or `202 Accepted` with an error map for business validation failures).
+## 2. Architecture & Design Patterns
 
-## 2. Design Patterns Employed
+This service is built on a highly modular and decoupled architecture, leveraging several key design patterns:
 
-This module is a showcase of several well-established design patterns, contributing to its robustness and maintainability:
+- **Chain of Responsibility**: The core routing logic is built on a chain of handlers (`BookingFlowHandler`). Each handler is responsible for recognizing a specific request format. If a handler cannot process a request, it passes it to the next handler in the chain. This makes the system incredibly easy to extend with new request types.
 
-### 2.1. Template Method Pattern
--   **Description**: Defines the skeleton of an algorithm in a base class, deferring some steps to subclasses.
--   **Usage**: `AbstractBookingService<T>` is the abstract base class. Its `bookFlight(T request)` method is the `final` template method, enforcing the sequence: `validate` -> (`onSuccess` or `onError`). Subclasses (like `FlightBookingServiceImpl`) provide concrete implementations for these abstract steps.
--   **Benefits**: Guarantees a consistent, unchangeable workflow for core operations while allowing flexibility in specific step implementations. Prevents developers from accidentally altering the fundamental process.
+- **Composite Pattern**: The validation layer uses a composite structure. Main validators (e.g., `FlightBookingValidator`) are composed of smaller, single-purpose field validators (e.g., `AirlineCodeValidator`, `DateValidator`). This makes validation logic granular, reusable, and easy to maintain.
 
-### 2.2. Strategy Pattern
--   **Description**: Defines a family of algorithms, encapsulates each one, and makes them interchangeable.
--   **Usage**: `FlightBookingServiceImpl` delegates its `validate`, `onSuccess`, and `onError` operations to separate strategy interfaces (`BookingValidationStrategy`, `BookingSuccessStrategy`, `BookingErrorStrategy`) and their concrete implementations (e.g., `DefaultBookingValidationStrategy`, `SagaStartSuccessStrategy`, `DefaultBookingErrorStrategy`).
--   **Benefits**: Allows the behavior of each step to be changed or extended independently without modifying the `FlightBookingServiceImpl`. Enhances modularity, testability, and extensibility.
+- **Factory Pattern**: A `HandlerChainFactory` is used to encapsulate the complex process of building the handler chain, including the injection of all necessary services, parsers, and validators. This simplifies the router and centralizes dependency management.
 
-### 2.3. Global Exception Handling (Architectural Pattern)
--   **Description**: Centralized mechanism to catch and handle exceptions across the entire application.
--   **Usage**: Implemented via `@ControllerAdvice` in `GlobalExceptionHandler`. It specifically intercepts `MethodArgumentNotValidException` (from `@Valid` annotations) to return structured `400 Bad Request` responses.
--   **Benefits**: Provides a consistent error response format to clients, prevents boilerplate `try-catch` blocks in controllers, and improves the overall robustness of the API.
+- **Strategy Pattern (via Spring Profiles)**: The application uses interfaces for orchestration (`FlightBookingOrchestrator`) and has two sets of implementations ("real" and "mock"). Spring Profiles are used as a strategy selector to determine which implementation to activate at runtime, allowing for easy switching between live network calls and mock development data.
 
-## 3. Feature Guidance and Extensibility
+- **Externalized Configuration**: All user-facing error messages are managed in a dedicated `errorMapping.yml` file and loaded using Spring's `@ConfigurationProperties`. This allows for error messages to be changed without recompiling the code.
 
-This design provides clear pathways for future feature development and modifications:
+## 3. Configuration
 
-### 3.1. Adding New Booking Types (e.g., Hotel, Car Rental)
--   **Guidance**:
-    1.  Create new DTOs (e.g., `HotelBookingRequest`, `CarRentalRequest`).
-    2.  Create new concrete service implementations extending `AbstractBookingService<NewRequestType>` (e.g., `HotelBookingServiceImpl extends AbstractBookingService<HotelBookingRequest>`).
-    3.  Implement the `validate`, `onSuccess`, and `onError` methods in the new service, potentially reusing existing strategies or creating new ones specific to the booking type.
-    4.  Create new controllers (e.g., `HotelBookingController`) to expose the new booking functionality.
+### 3.1. Error Messages
 
-### 3.2. Changing Validation Logic
--   **Guidance**:
-    1.  Modify `DefaultBookingValidationStrategy` for changes to the current flight booking validation.
-    2.  To introduce entirely different validation rules (e.g., for premium users), create a new implementation of `BookingValidationStrategy` (e.g., `PremiumUserBookingValidationStrategy`).
-    3.  Inject the desired validation strategy into `FlightBookingServiceImpl` (this might require a factory or conditional bean creation if multiple strategies are needed at runtime).
+All business error messages are defined in `src/main/resources/errorMapping.yml`. The application maps an internal error code to a user-facing string.
 
-### 3.3. Altering Success Handling (e.g., Different Orchestrator, Event Bus)
--   **Guidance**:
-    1.  Modify `SagaStartSuccessStrategy` to change how the current flight booking saga is initiated.
-    2.  To use a different mechanism for success (e.g., publishing to a Kafka topic instead of a REST call), create a new implementation of `BookingSuccessStrategy` (e.g., `KafkaBookingSuccessStrategy`).
-    3.  Inject the new success strategy into `FlightBookingServiceImpl`.
+```yaml
+error:
+  messages:
+    ERR-001: "The request format is invalid. Please check the documentation."
+    ERR-002: "The provided data is not valid."
+```
 
-### 3.4. Customizing Error Responses
--   **Guidance**:
-    1.  Modify `DefaultBookingErrorStrategy` to change the format or content of error messages for business validation failures.
-    2.  For different types of errors (e.g., external service errors), you might introduce new `BookingErrorStrategy` implementations or extend the `GlobalExceptionHandler` to catch other specific exceptions.
+To add a new error, simply add a new key-value pair to this file and reference the new key in the application code.
 
-### 3.5. Enhancing Cross-Cutting Concerns (Logging, Monitoring)
--   **Guidance**:
-    1.  **Logging**: Use Spring's AOP (Aspect-Oriented Programming) to add logging aspects around service methods or controller endpoints without modifying the core business logic.
-    2.  **Monitoring**: Integrate with monitoring tools by adding metrics (e.g., using Micrometer) to key operations within the service or strategy classes.
+### 3.2. Mock vs. Real Services (Spring Profiles)
 
-## 4. Getting Started
+To facilitate development without needing live downstream services, the application includes a `mock` profile.
 
-1.  **Prerequisites**: Java 17+, Maven, Docker (for orchestrator/other services).
-2.  **Build**: `mvn clean install`
-3.  **Run**: `java -jar target/adapter-0.0.1-SNAPSHOT.jar` (or run from your IDE).
-4.  **Configuration**: Ensure `application.yml` has the correct `orchestrator.service.url` and database settings.
+- **To activate mock services**: Add the following to your `src/main/resources/application.yml` file. The application will return hardcoded mock data for all orchestration calls.
 
----
+```yaml
+spring:
+  profiles:
+    active: mock
+```
 
-This `adapter` module exemplifies a well-structured Spring Boot application, ready for scalable and maintainable development.
+- **To activate real services**: Comment out or remove the `active: mock` line. The application will attempt to make live HTTP calls to the configured downstream service URLs.
+
+## 4. API Usage
+
+All interactions are handled through a single endpoint.
+
+- **Endpoint**: `POST /api/v1/bookings`
+- **Headers**: `Content-Type: application/json`
+- **Success Status Code**: `200 OK` (Note: The HTTP status is always 200 OK. The success or failure of the business operation is indicated within the response body).
+
+### 4.1. Request Body Format
+
+```json
+{
+    "query": "<Your Request String>"
+}
+```
+
+### 4.2. Request Examples
+
+#### Flight Booking
+- **Query**: `OAAY13SEPDFWSEANN1`
+- **Response (Mock)**: `Booking Confirmed: {booking-id}{AA}{14A}{CONFIRMED}`
+
+#### Availability Check
+- **Query**: `START 23SEPDFWSEA`
+- **Response (Mock)**: `Mock Response: 3 flights available from DFW to SEA on 23SEP`
+
+#### Customer Name Query
+- **Query**: `my name is John Doe`
+- **Response (Mock)**: `Mock Response: Customer profile found for name: John Doe`
+
+#### Customer Phone Number Query
+- **Query**: `1234567890`
+- **Response (Mock)**: `Mock Response: Customer profile found for phone number: 1234567890`
+
+### 4.3. Error Response Examples
+
+#### Invalid Format Error
+- **Query**: `this is not a valid query`
+- **Response**: `The request format is invalid. Please check the documentation.`
+
+#### Validation Error
+- **Query**: `OAAY13SEP` (An incomplete flight booking string)
+- **Response**: `The provided data is not valid.`
+
+## 5. Build and Run
+
+This is a standard Spring Boot application built with Maven.
+
+1.  **Build the application**:
+    ```bash
+    mvn clean install
+    ```
+
+2.  **Run the application**:
+    ```bash
+    java -jar target/adapter-0.0.1-SNAPSHOT.jar
+    ```
+
+The service will start on the configured port (default is 8080).
