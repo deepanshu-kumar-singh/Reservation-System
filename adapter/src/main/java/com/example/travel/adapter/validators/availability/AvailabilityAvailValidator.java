@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.travel.adapter.constant.ErrorCodes.ERR_002;
+
 @Component
 public class AvailabilityAvailValidator implements AvailValidator<Map<String, Object>> {
 
@@ -28,7 +30,7 @@ public class AvailabilityAvailValidator implements AvailValidator<Map<String, Ob
     public List<String> validate(Map<String, Object> availabilityDetails) {
         List<String> errors = new ArrayList<>();
         if (availabilityDetails == null) {
-            errors.add("Availability details cannot be null.");
+            errors.add(ERR_002);
             return errors;
         }
 

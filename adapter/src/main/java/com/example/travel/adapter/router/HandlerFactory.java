@@ -1,7 +1,6 @@
 package com.example.travel.adapter.router;
 
 import com.example.travel.adapter.dto.SellRequestParser;
-import com.example.travel.adapter.error.ErrorResponseFactory;
 import com.example.travel.adapter.handler.*;
 import com.example.travel.adapter.service.booking.availability.AvailabilityService;
 import com.example.travel.adapter.service.booking.customer.CustomerService;
@@ -23,7 +22,7 @@ public class HandlerFactory {
     private final AvailabilityAvailValidator availabilityValidator;
     private final NameValidator nameValidator;
     private final PhoneNumberValidator phoneNumberValidator;
-    private final ErrorResponseFactory errorResponseFactory;
+
 
     public HandlerFactory(SellService sellService,
                           AvailabilityService availabilityService,
@@ -32,8 +31,7 @@ public class HandlerFactory {
                           SellValidator sellValidator,
                           AvailabilityAvailValidator availabilityValidator,
                           NameValidator nameValidator,
-                          PhoneNumberValidator phoneNumberValidator,
-                          ErrorResponseFactory errorResponseFactory) {
+                          PhoneNumberValidator phoneNumberValidator) {
         this.sellService = sellService;
         this.availabilityService = availabilityService;
         this.customerService = customerService;
@@ -42,14 +40,13 @@ public class HandlerFactory {
         this.availabilityValidator = availabilityValidator;
         this.nameValidator = nameValidator;
         this.phoneNumberValidator = phoneNumberValidator;
-        this.errorResponseFactory = errorResponseFactory;
     }
 
     public BookingHandler linkableChain() {
-        BookingHandler flightBookingHandler = new SellHandler(errorResponseFactory, sellService, parser, sellValidator);
-        BookingHandler availabilityHandler = new AvailabilityHandler(errorResponseFactory, availabilityService, availabilityValidator);
-        BookingHandler nameQueryHandler = new NameHandler(errorResponseFactory, customerService, nameValidator);
-        BookingHandler phoneNumberQueryHandler = new PhoneNumberHandler(errorResponseFactory, customerService, phoneNumberValidator);
+        BookingHandler flightBookingHandler = new SellHandler(sellService, parser, sellValidator);
+        BookingHandler availabilityHandler = new AvailabilityHandler(availabilityService, availabilityValidator);
+        BookingHandler nameQueryHandler = new NameHandler(customerService, nameValidator);
+        BookingHandler phoneNumberQueryHandler = new PhoneNumberHandler(customerService, phoneNumberValidator);
 
         flightBookingHandler.setNext(availabilityHandler);
         availabilityHandler.setNext(nameQueryHandler);

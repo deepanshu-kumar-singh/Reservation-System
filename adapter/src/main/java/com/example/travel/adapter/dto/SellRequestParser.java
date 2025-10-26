@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.example.travel.adapter.constant.RegexConstant.FLIGHT_BOOKING_PATTERN;
+
 @Component
 public class SellRequestParser {
-
-    private static final Pattern FLIGHT_BOOKING_PATTERN = Pattern.compile("^O([A-Z]{2})([A-Z])(\\d{2}[A-Z]{3})([A-Z]{3})([A-Z]{3})NN(\\d+)$", Pattern.CASE_INSENSITIVE);
 
     public Map<String, Object> parse(String request) {
         Matcher matcher = FLIGHT_BOOKING_PATTERN.matcher(request);

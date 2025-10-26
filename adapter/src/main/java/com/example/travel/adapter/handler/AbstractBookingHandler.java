@@ -1,15 +1,10 @@
 package com.example.travel.adapter.handler;
 
-import com.example.travel.adapter.error.ErrorResponseFactory;
-
 public abstract class AbstractBookingHandler implements BookingHandler {
 
     private BookingHandler next;
-    protected ErrorResponseFactory errorResponseFactory;
 
-    protected AbstractBookingHandler(ErrorResponseFactory errorResponseFactory) {
-        this.errorResponseFactory = errorResponseFactory;
-    }
+    protected AbstractBookingHandler() {}
 
     @Override
     public void setNext(BookingHandler handler) {
@@ -20,7 +15,6 @@ public abstract class AbstractBookingHandler implements BookingHandler {
         if (next != null) {
             return next.handle(request);
         }
-
-        return errorResponseFactory.createErrorResponse("ERR-001");
+        return "ERR-001";
     }
 }

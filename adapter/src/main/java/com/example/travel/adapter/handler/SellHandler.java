@@ -1,7 +1,6 @@
 package com.example.travel.adapter.handler;
 
 import com.example.travel.adapter.dto.SellRequestParser;
-import com.example.travel.adapter.error.ErrorResponseFactory;
 import com.example.travel.adapter.service.booking.flight.SellService;
 import com.example.travel.adapter.validators.sell.SellValidator;
 
@@ -14,8 +13,7 @@ public class SellHandler extends AbstractBookingHandler {
     private final SellValidator validator;
     private final SellService sellService;
 
-    public SellHandler(ErrorResponseFactory errorResponseFactory, SellService sellService, SellRequestParser parser, SellValidator validator) {
-        super(errorResponseFactory);
+    public SellHandler(SellService sellService, SellRequestParser parser, SellValidator validator) {
         this.sellService = sellService;
         this.parser = parser;
         this.validator = validator;
@@ -29,7 +27,7 @@ public class SellHandler extends AbstractBookingHandler {
             if (errors.isEmpty()) {
                 return sellService.bookFlight(flightDetails);
             }
-            return errorResponseFactory.createErrorResponse("40000");
+            return "40000";
         }
         return handleNext(request);
     }
