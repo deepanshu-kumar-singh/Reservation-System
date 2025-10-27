@@ -14,7 +14,7 @@ public class NameValidator implements Validator<String> {
     public List<String> validate(Map<String, Object> name) {
         List<String> errors = new ArrayList<>();
 
-        if (name == null || name.trim().isEmpty()) {
+        if (name == null ) {
             errors.add("Name cannot be null");
         }
         return errors;
