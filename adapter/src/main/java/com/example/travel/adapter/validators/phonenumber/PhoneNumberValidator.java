@@ -5,15 +5,16 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class PhoneNumberValidator implements Validator<String> {
 
     @Override
-    public List<String> validate(String phoneNumber) {
+    public List<String> validate(Map<String, Object> phoneNumber) {
         List<String> errors = new ArrayList<>();
 
-        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+        if (phoneNumber == null) {
             errors.add("Phone number cannot be null");
         }
 

@@ -30,6 +30,7 @@ public class AvailabilityHandler extends AbstractBookingHandler {
             availabilityDetails.put(DATE, matcher.group(1));
             availabilityDetails.put(START_POINT, matcher.group(2));
             availabilityDetails.put(END_POINT, matcher.group(3));
+            availabilityDetails.put("RequestType", "availability");
 
             List<String> errors = validator.validate(availabilityDetails);
             if (errors.isEmpty()) {

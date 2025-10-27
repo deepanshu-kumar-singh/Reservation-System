@@ -3,6 +3,8 @@ package com.example.travel.adapter.service.booking.customer;
 import com.example.travel.adapter.service.orchestration.customer.CustomerDataOrchestrator;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class CustomerService {
 
@@ -12,11 +14,11 @@ public class CustomerService {
         this.orchestrator = orchestrator;
     }
 
-    public String processName(String name) {
+    public String processName(Map<String, Object> name) {
         return orchestrator.processName(name);
     }
 
-    public String processPhoneNumber(String phoneNumber) {
+    public String processPhoneNumber(Map<String, Object> phoneNumber) {
         return orchestrator.processPhoneNumber(phoneNumber);
     }
 }

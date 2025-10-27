@@ -22,6 +22,7 @@ public class SellRequestParser {
             flightDetails.put("startPoint", matcher.group(4));
             flightDetails.put("endPoint", matcher.group(5));
             flightDetails.put("seats", Integer.parseInt(matcher.group(6)));
+            flightDetails.put("requestType", "sell");
             return flightDetails;
         }
         return null;

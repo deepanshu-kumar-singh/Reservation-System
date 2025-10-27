@@ -5,12 +5,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class NameValidator implements Validator<String> {
 
     @Override
-    public List<String> validate(String name) {
+    public List<String> validate(Map<String, Object> name) {
         List<String> errors = new ArrayList<>();
 
         if (name == null || name.trim().isEmpty()) {
